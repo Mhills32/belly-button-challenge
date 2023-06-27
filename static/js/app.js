@@ -12,6 +12,7 @@ function init() {
   
       let firstSample = idNames[0];
       buildBarChart(firstSample);
+      buildBubbleChart(firstSample);
       buildMetadata(firstSample);
     });
   }
@@ -45,8 +46,42 @@ function init() {
     });
   }
   
+  function buildBubbleChart(sample) {
+    let url = "https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json";
+  
+    d3.json(url).then((data) => {
+      let samples = data.samples.find((sampleData) => sampleData.id === sample);
+      let sampleValues = samples.sample_values;
+      let otuIds = samples.otu_ids;
+      let otuLabels = samples.otu_labels;
+  
+      let trace = {
+        x: otuIds,
+        y: sampleValues,
+        text: otuLabels,
+        mode: "markers",
+        marker: {
+          size: sampleValues,
+          color: otuIds,
+          colorscale: "Earth"
+        }
+      };
+  
+      let chartData = [trace];
+  
+      let layout = {
+        title: "Sample Values vs. OTU IDs",
+        xaxis: { title: "OTU IDs" },
+        yaxis: { title: "Sample Values" }
+      };
+  
+      Plotly.newPlot("bubble", chartData, layout);
+    });
+  }
+  
   function optionChanged(newSample) {
     buildBarChart(newSample);
+    buildBubbleChart(newSample);
     buildMetadata(newSample);
   }
   
